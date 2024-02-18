@@ -27,12 +27,13 @@ display.set_caption("Maze")
 clock = time.Clock() # Створюємо ігровий таймер
 
 #задай фон сцени
-bg = image.load("background.jpg") # завантажуємо картинку в гру
+bg = image.load("environment_forest_evening.png") # завантажуємо картинку в гру
 bg = transform.scale(bg, (WIDTH, HEIGHT)) #змінюємо розмір картинки
-player_img = image.load('hero.png')
-enemy_img = image.load('cyborg.png')
-wall_img = image.load('wall.png')
+player_img = image.load('jungleman.png')
+enemy_img = image.load('howl.png')
+wall_img = image.load('tree_39.png')
 treasure_img =image.load('treasure.png')
+coin_img = image.load('—Pngtree—glossy golden coin icon_5986301.png')
 
 sprites = sprite.Group()
 
@@ -90,7 +91,7 @@ class Enemy(GameSprite):
         super().__init__(enemy_img, TILESIZE, TILESIZE, x, y)
         self.hp = 100
         self.damage = 20
-        self.speed = 5
+        self.speed = 3
         self.dir_list = ['left', 'right', 'up', 'down']
         self.dir = choice(self.dir_list)
         enemys.add(self)
@@ -120,7 +121,8 @@ class Wall(GameSprite):
         super().__init__(wall_img, TILESIZE, TILESIZE, x, y)
         walls.add(self)
 
-player = Player(player_img, TILESIZE, TILESIZE,  300, 300)
+player = Player(player_img, TILESIZE/2, TILESIZE-5,  300, 300)
+treasure = None
 
 with open("map.txt", "r") as file:
     x, y = 0, 0
@@ -136,8 +138,9 @@ with open("map.txt", "r") as file:
                 player.rect.y = y
                 player.start_x, player.start_y = x, y
             elif symbol == 'T':
-                GameSprite(treasure_img, TILESIZE, TILESIZE, x, y)
-
+               treasure = GameSprite(treasure_img, TILESIZE, TILESIZE, x, y)
+            elif symbol == 'C':
+               coin = GameSprite(coin_img, TILESIZE, TILESIZE, x, y)
             x += TILESIZE
         y+=TILESIZE
         x = 0
@@ -151,11 +154,19 @@ while True:
     for e in event.get():
         if e.type == QUIT:
             quit()
+
     if not finish:
         player.update()
         enemys.update()
+
     if player.hp <= 0:
         finish = True
+
+    if sprite.collide_rect(player, treasure):
+        finish = True
+        finish_text = font2.render("!You Win!", True, (0, 255, 0))
+
+
     window.blit(bg, (0,0))
     sprites.draw(window)
     window.blit(hp_text, (10, 10))
