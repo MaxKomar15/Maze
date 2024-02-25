@@ -31,8 +31,8 @@ bg = image.load("environment_forest_evening.png") # завантажуємо к�
 bg = transform.scale(bg, (WIDTH, HEIGHT)) #змінюємо розмір картинки
 player_img = image.load('jungleman.png')
 enemy_img = image.load('howl.png')
-wall_img = image.load('tree_39.png')
-treasure_img =image.load('treasure.png')
+wall_img = image.load('wall.png')
+treasure_img =image.load('treasure-303487_640.png')
 coin_img = image.load('—Pngtree—glossy golden coin icon_5986301.png')
 
 sprites = sprite.Group()
@@ -115,6 +115,7 @@ class Enemy(GameSprite):
      
         
 walls = sprite.Group()
+coins = sprite.Group()
 
 class Wall(GameSprite):
     def __init__(self, x, y):
@@ -140,12 +141,13 @@ with open("map.txt", "r") as file:
             elif symbol == 'T':
                treasure = GameSprite(treasure_img, TILESIZE, TILESIZE, x, y)
             elif symbol == 'C':
-               coin = GameSprite(coin_img, TILESIZE, TILESIZE, x, y)
+               coins.add(GameSprite(coin_img, TILESIZE, TILESIZE, x, y))
             x += TILESIZE
         y+=TILESIZE
         x = 0
 
 hp_text = font1.render(F"HP: {player.hp}", True, (255, 255, 255))
+coins_text = font1.render(F"Coins: {player.coins}", True, (255, 255, 255))
 finish_text = font2.render("GAME OVER", True, (255, 0, 0))
 finish = False
 
@@ -166,10 +168,14 @@ while True:
         finish = True
         finish_text = font2.render("!You Win!", True, (0, 255, 0))
 
+    if sprite.spritecollide(player, coins, True):
+        player.coins += 1
+        coins_text = font1.render(F"Coins: {player.coins}", True, (255, 255, 255))
 
     window.blit(bg, (0,0))
     sprites.draw(window)
     window.blit(hp_text, (10, 10))
+    window.blit(coins_text, (WIDTH -150, 10))
     if finish:
         window.blit(finish_text, (300, 250))
     display.update()
